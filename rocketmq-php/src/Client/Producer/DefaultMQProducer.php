@@ -76,16 +76,17 @@ class DefaultMQProducer
                     $brokersSent[$times] = $mq->getBrokerName();
                     try {
                         $beginTimestampPrev = System::currentTimeMillis();
-                        $sendResult = $this->sendKernelImpl($msg, $mq, $communicationMode, $sendCallback,
-                            $topicPublishInfo, $timeout);
+                        $sendResult = $this->sendKernelImpl(
+                            $msg, $mq, $communicationMode, $sendCallback,
+                            $topicPublishInfo, $timeout
+                        );
                         $endTimestamp = System::currentTimeMillis();
                         $this->updateFaultItem($mq->getBrokerName(), $endTimestamp - $beginTimestampPrev, false);
                         switch ($communicationMode) {
-                            case CommunicationMode::ASYNC:
-                                return null;
-                            case CommunicationMode::ONEWAY:
-                                return null;
-                            case CommunicationMode::SYNC:
+                        case CommunicationMode::ASYNC:
+                        case CommunicationMode::ONEWAY:
+                            return null;
+                        case CommunicationMode::SYNC:
                                 if ($sendResult->getSendStatus() != SendStatus::SEND_OK) {
                                     $this->defaultMQProducer->isRetryAnotherBrokerWhenNotStoreOK();
                                 }
